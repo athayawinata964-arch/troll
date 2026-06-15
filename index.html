@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🚨 SISTEM TERKUNCI 🚨</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0f1a, #0a1f2e);
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(15px);
+            border-radius: 48px;
+            padding: 30px 24px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #ffcc00, #ff6600);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .paket-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .paket-card {
+            background: linear-gradient(145deg, #1a2a38, #0f1a22);
+            border-radius: 28px;
+            padding: 20px;
+            width: 170px;
+            cursor: pointer;
+            border: 1px solid #ffaa33;
+            transition: 0.2s;
+        }
+        .paket-card:hover { transform: translateY(-8px); background: #ffaa3322; }
+        .paket-nama { font-size: 1.4rem; font-weight: bold; color: #ffcc44; }
+        .paket-detail { font-size: 0.75rem; color: #bbddff; }
+
+        .status-box {
+            background: #00000066;
+            border-radius: 40px;
+            padding: 15px;
+        }
+        #statusMessage { font-weight: bold; color: #00ffcc; }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #2a3a4a;
+            border-radius: 10px;
+            margin: 12px 0;
+        }
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ffaa00, #ff6600);
+            transition: width 0.2s;
+        }
+        .footer { font-size: 0.7rem; color: #88aacc; margin-top: 20px; }
+
+        /* OVERLAY PANIK FULLSCREEN */
+        .panic-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .panic-text {
+            font-size: 4rem;
+            font-weight: 900;
+            font-family: 'Impact', 'Courier New', monospace;
+            text-transform: uppercase;
+            text-align: center;
+            color: #ff0000;
+            text-shadow: 0 0 5px white, 0 0 10px red;
+            animation: textShake 0.08s infinite, textGlitch 0.2s infinite, textBlink 0.1s infinite;
+            background: rgba(0,0,0,0.7);
+            padding: 20px 40px;
+            border-radius: 20px;
+            white-space: nowrap;
+            letter-spacing: 5px;
+            z-index: 10002;
+        }
+
+        @keyframes textShake {
+            0% { transform: translate(2px, 1px); }
+            10% { transform: translate(-1px, -2px); }
+            20% { transform: translate(-3px, 0px); }
+            30% { transform: translate(3px, 2px); }
+            40% { transform: translate(1px, -1px); }
+            50% { transform: translate(-1px, 2px); }
+            60% { transform: translate(-3px, 1px); }
+            70% { transform: translate(3px, 1px); }
+            80% { transform: translate(-1px, -1px); }
+            90% { transform: translate(1px, 2px); }
+            100% { transform: translate(1px, -2px); }
+        }
+
+        @keyframes textGlitch {
+            0% { text-shadow: -2px 0 #00ffff, 2px 0 #ff00ff; }
+            25% { text-shadow: 2px 0 #00ffff, -2px 0 #ff00ff; }
+            50% { text-shadow: -4px 0 #00ffff, 4px 0 #ff00ff; }
+            75% { text-shadow: 4px 0 #00ffff, -4px 0 #ff00ff; }
+            100% { text-shadow: -2px 0 #00ffff, 2px 0 #ff00ff; }
+        }
+
+        @keyframes textBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        /* Latar kelap-kelip cepat */
+        .panic-overlay {
+            animation: bgFlash 0.04s infinite;
+        }
+
+        @keyframes bgFlash {
+            0% { background-color: #000; }
+            25% { background-color: #ff0000; }
+            50% { background-color: #fff; }
+            75% { background-color: #ff00ff; }
+            100% { background-color: #000; }
+        }
+
+        /* Kotak glitch acak */
+        .glitch-box {
+            position: absolute;
+            background: rgba(255,255,255,0.4);
+            width: 120px;
+            height: 120px;
+            filter: blur(12px);
+            animation: moveBox 0.15s infinite;
+            z-index: 10001;
+        }
+
+        @keyframes moveBox {
+            0% { top: 10%; left: 10%; background: rgba(255,0,0,0.6); }
+            25% { top: 70%; left: 80%; background: rgba(0,255,0,0.6); }
+            50% { top: 40%; left: 30%; background: rgba(0,0,255,0.6); }
+            75% { top: 80%; left: 20%; background: rgba(255,255,0,0.6); }
+            100% { top: 10%; left: 10%; background: rgba(255,0,0,0.6); }
+        }
+
+        body.locked .container {
+            pointer-events: none;
+            filter: blur(5px);
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="mainContainer">
+    <h1>🎁 KUOTA GRATIS 🎁</h1>
+    <div class="sub" style="color:#aaf0ff;">✨ Pilih paket undian ✨</div>
+    <div class="paket-grid">
+        <div class="paket-card" data-paket="3GB (4 hari)"><div class="paket-nama">3 GB</div><div class="paket-detail">4 hari</div></div>
+        <div class="paket-card" data-paket="10GB (1 bulan)"><div class="paket-nama">10 GB</div><div class="paket-detail">1 bulan</div></div>
+        <div class="paket-card" data-paket="UNLIMITED (1 bulan)"><div class="paket-nama">UNLIMITED</div><div class="paket-detail">1 bulan</div></div>
+    </div>
+    <div class="status-box">
+        <div id="statusMessage">💎 Klik paket di atas 💎</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div id="infoText"></div>
+    </div>
+    <div class="footer">⚠️ SIMULASI HIBURAN, TIDAK ADA KUOTA NYATA ⚠️</div>
+</div>
+
+<!-- OVERLAY PANIK -->
+<div id="panicOverlay" class="panic-overlay">
+    <div class="panic-text" id="panicText">ARE YOU IDIOT ?</div>
+    <div class="glitch-box" id="glitchBox"></div>
+</div>
+
+<script>
+    (function() {
+        // KONFIGURASI: 1 MENIT = 60000 ms
+        const PANIC_DURATION = 60000; // 60 detik, tanpa tampilan timer
+        let isPanic = false;
+        let panicTimeout = null;
+        let selectedPaket = "";
+        
+        // Audio
+        let audioCtx = null;
+        let gainNode = null;
+        let audioInterval = null;
+        let osc1, osc2, noiseProcessor;
+        
+        // DOM
+        const container = document.getElementById('mainContainer');
+        const panicOverlay = document.getElementById('panicOverlay');
+        const statusMsg = document.getElementById('statusMessage');
+        const progressFill = document.getElementById('progressFill');
+        const infoText = document.getElementById('infoText');
+        
+        // ========== SUARA KERAS + VOLUME NAIK SENDIRI ==========
+        async function startPanicSound() {
+            if (audioCtx) {
+                await audioCtx.close().catch(()=>{});
+            }
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
+            
+            gainNode = audioCtx.createGain();
+            gainNode.gain.value = 0.05; // mulai pelan
+            gainNode.connect(audioCtx.destination);
+            
+            // OSC 1 (sirene)
+            osc1 = audioCtx.createOscillator();
+            osc1.type = 'sawtooth';
+            osc1.frequency.value = 300;
+            osc1.connect(gainNode);
+            osc1.start();
+            
+            // OSC 2 (nada tinggi)
+            osc2 = audioCtx.createOscillator();
+            osc2.type = 'square';
+            osc2.frequency.value = 600;
+            osc2.connect(gainNode);
+            osc2.start();
+            
+            // White noise
+            const bufferSize = 4096;
+            noiseProcessor = audioCtx.createScriptProcessor(bufferSize, 1, 1);
+            noiseProcessor.onaudioprocess = function(e) {
+                const output = e.outputBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = (Math.random() * 2 - 1) * 0.6;
+                }
+            };
+            noiseProcessor.connect(gainNode);
+            
+            // Frekuensi berubah-ubah (efek darurat)
+            let freqUp1 = true, freqUp2 = true;
+            let freq1 = 300, freq2 = 600;
+            const freqInterval = setInterval(() => {
+                if (!isPanic) { clearInterval(freqInterval); return; }
+                if (freqUp1) { freq1 += 40; if (freq1 >= 1000) freqUp1 = false; }
+                else { freq1 -= 40; if (freq1 <= 200) freqUp1 = true; }
+                if (freqUp2) { freq2 += 30; if (freq2 >= 1200) freqUp2 = false; }
+                else { freq2 -= 30; if (freq2 <= 400) freqUp2 = true; }
+                if (osc1) osc1.frequency.value = freq1;
+                if (osc2) osc2.frequency.value = freq2;
+            }, 180);
+            
+            // Volume naik sendiri dari 0.05 ke 0.9 dalam 5 detik pertama
+            let volume = 0.05;
+            const volumeInterval = setInterval(() => {
+                if (!isPanic) { clearInterval(volumeInterval); return; }
+                if (volume < 0.85) {
+                    volume += 0.025;
+                    if (gainNode) gainNode.gain.value = volume;
+                }
+            }, 150);
+            
+            // Simpan interval
+            window.panicFreqInterval = freqInterval;
+            window.panicVolumeInterval = volumeInterval;
+        }
+        
+        function stopPanicSound() {
+            if (osc1) { try { osc1.stop(); } catch(e){} osc1 = null; }
+            if (osc2) { try { osc2.stop(); } catch(e){} osc2 = null; }
+            if (noiseProcessor) { try { noiseProcessor.disconnect(); } catch(e){} noiseProcessor = null; }
+            if (window.panicFreqInterval) clearInterval(window.panicFreqInterval);
+            if (window.panicVolumeInterval) clearInterval(window.panicVolumeInterval);
+            if (audioCtx) {
+                audioCtx.close().catch(()=>{});
+                audioCtx = null;
+            }
+        }
+        
+        // ========== TEKS BERUBAH ==========
+        let textChangeInterval = null;
+        function startTextRotation() {
+            const texts = [
+                "ARE YOU IDIOT ?",
+                "YOU ARE IDIOT!",
+                "VIRUS MASUK!!",
+                "SISTEM HANCUR",
+                "PANIK!!!",
+                "HAHAHAHAHA",
+                "TIDAK BISA KELUAR",
+                "HACKED 😈",
+                "60 DETIK LAGI",
+                "RUMAH HANCUR"
+            ];
+            let idx = 0;
+            textChangeInterval = setInterval(() => {
+                const el = document.getElementById('panicText');
+                if (el) el.textContent = texts[idx % texts.length];
+                idx++;
+            }, 450);
+        }
+        function stopTextRotation() {
+            if (textChangeInterval) clearInterval(textChangeInterval);
+        }
+        
+        // ========== ANTI KELUAR TOTAL ==========
+        function beforeUnloadHandler(e) {
+            if (isPanic) {
+                e.preventDefault();
+                e.returnValue = '⚠️ SISTEM TERKUNCI 60 DETIK! Jangan keluar! ⚠️';
+                return e.returnValue;
+            }
+        }
+        
+        function popStateHandler() {
+            if (isPanic) {
+                history.pushState(null, null, location.href);
+                if (statusMsg) statusMsg.innerText = "⛔ Tombol back dinonaktifkan!";
+            }
+        }
+        
+        // Blokir semua tombol pintasan
+        function blockShortcuts(e) {
+            if (!isPanic) return;
+            const forbidden = ['F12', 'F5', 'Escape', 'F5', 'F11'];
+            if (forbidden.includes(e.key) || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.key === 'u') || (e.ctrlKey && e.key === 'r')) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        }
+        
+        document.addEventListener('contextmenu', (e) => { if (isPanic) e.preventDefault(); });
+        document.addEventListener('keydown', blockShortcuts);
+        
+        // ========== MULAI PANIK (LOCK) ==========
+        function startPanic() {
+            if (isPanic) return;
+            isPanic = true;
+            document.body.classList.add('locked');
+            panicOverlay.style.display = 'flex';
+            
+            // Suara dan efek visual
+            startPanicSound();
+            startTextRotation();
+            
+            // Timer 60 detik tanpa tampilan
+            if (panicTimeout) clearTimeout(panicTimeout);
+            panicTimeout = setTimeout(() => {
+                finishPanic();
+            }, PANIC_DURATION);
+            
+            // Pasang anti keluar
+            window.addEventListener('beforeunload', beforeUnloadHandler);
+            window.addEventListener('popstate', popStateHandler);
+            history.pushState(null, null, location.href);
+            
+            // Update status di halaman utama (masih kebaca meski terblur)
+            statusMsg.innerText = `⚡ PANIK MODE AKTIF 60 DETIK! ⚡`;
+            infoText.innerText = `🔒 Jangan coba keluar, suara akan makin keras!`;
+        }
+        
+        function finishPanic() {
+            isPanic = false;
+            if (panicTimeout) clearTimeout(panicTimeout);
+            stopPanicSound();
+            stopTextRotation();
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+            window.removeEventListener('popstate', popStateHandler);
+            panicOverlay.style.display = 'none';
+            document.body.classList.remove('locked');
+            progressFill.style.width = "0%";
+            statusMsg.innerHTML = "😜 GAGAL TOTAL! 😜<br> Ini cuma troll, kuota gratis tidak akan pernah ada.";
+            infoText.innerText = "Klik paket lain jika ingin di-troll lagi 🤣";
+            selectedPaket = "";
+            // Bersihkan history sedikit biar back normal lagi
+            history.go(1);
+        }
+        
+        // ========== PROSES PILIH PAKET ==========
+        function prosesPilihPaket(paket) {
+            if (isPanic) {
+                statusMsg.innerText = "Tunggu proses sebelumnya selesai!";
+                return;
+            }
+            selectedPaket = paket;
+            statusMsg.innerText = `🔄 Memverifikasi ${paket}... 🔄`;
+            infoText.innerText = "Menghubungi server...";
+            progressFill.style.width = "30%";
+            setTimeout(() => {
+                statusMsg.innerText = `✅ ${paket} berhasil diklaim! (tipuan)`;
+                progressFill.style.width = "60%";
+                setTimeout(() => {
+                    startPanic();
+                }, 600);
+            }, 1000);
+        }
+        
+        // Event listener kartu paket
+        document.querySelectorAll('.paket-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const paket = card.getAttribute('data-paket');
+                prosesPilihPaket(paket);
+            });
+        });
+        
+        // Jangan biarkan overlay tertutup dengan klik
+        panicOverlay.addEventListener('click', (e) => {
+            if (isPanic) e.stopPropagation();
+        });
+        
+        console.log("Troll 60 detik siap. Pilih paket untuk merusak suasana.");
+    })();
+</script>
+</body>
+</html>
